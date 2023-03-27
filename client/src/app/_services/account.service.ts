@@ -9,7 +9,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class AccountService {
-  baseUrl = 'htpps://localhost:7092/api/';
+  baseUrl = 'https://localhost:7092/api/';
 
   constructor(private http: HttpClient) { }
 
