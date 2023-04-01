@@ -5,7 +5,7 @@
       aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <ul class="navbar-nav me-auto mb-2 mb-md-0" *ngIf="loggedIn">
+    <ul class="navbar-nav me-auto mb-2 mb-md-0" *ngIf="accountService.currentUser$ | async">
       <li class="nav-item">
         <a class="nav-link" href="#">Matches</a>
       </li>
@@ -17,7 +17,7 @@
       </li>
     </ul>
 
-    <div class="dropdown" *ngIf="loggedIn" dropdown>
+    <div class="dropdown" *ngIf="accountService.currentUser$ | async" dropdown>
       <a class="dropdown-toggle text-light text-decoration-none"
        dropdownToggle
       >Welcome, user!
@@ -28,7 +28,7 @@
       </div>
     </div>
     <form #loginForm="ngForm" class="d-flex" (ngSubmit)="login()" autocomplete="off"
-      *ngIf="!loggedIn"
+      *ngIf="!(accountService.currentUser$ | async)"
     >
       <input class="form-control me-2" 
       name="username"
