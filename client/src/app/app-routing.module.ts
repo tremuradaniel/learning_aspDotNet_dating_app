@@ -5,6 +5,7 @@ import { MemberListComponent } from './members/member-list/member-list.component
 import { HomeComponent } from './home/home.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './_guards/auth.guard';
 
 const routes: Routes = [
   {
@@ -13,7 +14,8 @@ const routes: Routes = [
   },
   {
     path: 'members', 
-    component: MemberListComponent
+    component: MemberListComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'members/:id', 
