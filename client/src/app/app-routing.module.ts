@@ -1,3 +1,5 @@
+import { ServerErrorComponent } from './errors/server-error/server-error.component';
+import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { TestErrorComponent } from './errors/test-error/test-error.component';
 import { MessagesComponent } from './messages/messages.component';
 import { ListsComponent } from './lists/lists.component';
@@ -41,8 +43,16 @@ const routes: Routes = [
     component: TestErrorComponent
   },
   {
+    path: "not-found",
+    component: NotFoundComponent
+  },
+  {
+    path: "server-error",
+    component: ServerErrorComponent
+  },
+  {
     path: '*', 
-    component: HomeComponent,
+    component: NotFoundComponent,
     pathMatch: "full"
   },
 ];

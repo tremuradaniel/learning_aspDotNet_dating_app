@@ -45,7 +45,7 @@ export class ErrorInterceptor implements HttpInterceptor {
                   error: error.error
                 }
               };
-              this.router.navigateByUrl('/', navigationExtras)
+              this.router.navigateByUrl('/server-error', navigationExtras)
               break;
           
             default:
