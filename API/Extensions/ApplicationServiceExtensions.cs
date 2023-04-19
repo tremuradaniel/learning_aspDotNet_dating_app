@@ -36,6 +36,8 @@ namespace API.Extensions
             // interface has an advantage when testing - easier to mock stuff
             services.AddScoped<ITokenService, Services.TokenService>();
 
+            services.AddScoped<IUserRepository, UserRepository>();
+
             return services;
         }
     }
