@@ -37,6 +37,7 @@ namespace API.Extensions
             services.AddScoped<ITokenService, Services.TokenService>();
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;
         }
