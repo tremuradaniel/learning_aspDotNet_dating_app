@@ -1,9 +1,13 @@
+using API.Entities;
+
 namespace API.DTOs
 {
     public class MemberDto
     {
         public int Id { get; set; }
         public string UserName { get; set; }
+
+        public string PhotoUrl { get; set; }
 
         // important to have a GetAge method in AppUser in order for automapper 
         // to do it's job
