@@ -77,3 +77,5 @@ _[Ss]cripts
 
 *.db-shm
 *.db-wal
+
+appsettings.json
