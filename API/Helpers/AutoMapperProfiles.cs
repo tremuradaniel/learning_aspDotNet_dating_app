@@ -2,6 +2,7 @@ using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using AutoMapper;
+using AutoMapper.Execution;
 
 namespace API.Helpers
 {
@@ -22,6 +23,8 @@ namespace API.Helpers
             )
             ;
             CreateMap<Photo, PhotoDto>();
+
+            CreateMap<MemberUpdateDto, AppUser>();
         }
     }
 }
