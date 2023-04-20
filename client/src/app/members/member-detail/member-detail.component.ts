@@ -2,6 +2,7 @@ import { MembersService } from 'src/app/_services/members.service';
 import { Component, OnInit } from '@angular/core';
 import { Member } from 'src/app/_models/Member';
 import { ActivatedRoute } from '@angular/router';
+import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from '@kolkov/ngx-gallery';
 
 @Component({
   selector: 'app-member-detail',
@@ -10,6 +11,8 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class MemberDetailComponent implements OnInit {
   member: Member | undefined;
+  galleryOptions: NgxGalleryOptions[] = [];
+  galleryImages: NgxGalleryImage[] = [];
 
   constructor(
     private membersService: MembersService,
@@ -18,6 +21,17 @@ export class MemberDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadMember();
+
+    this.galleryOptions = [
+      {
+        width: "500px",
+        height: "500px",
+        imagePercent: 100,
+        thumbnailsColumns: 4,
+        imageAnimation: NgxGalleryAnimation.Slide,
+        preview: false
+      }
+    ];
   }
 
   loadMember() {
@@ -28,8 +42,26 @@ export class MemberDetailComponent implements OnInit {
     }
 
     this.membersService.getMember(username).subscribe({
-      next: member => this.member = member
+      next: member => {
+        this.member = member;
+        this.galleryImages = this.getImages();
+      }
     });
+  }
+
+  getImages() {
+    if (!this.member) return [];
+    const imageUrls = [];
+
+    for (const photo of this.member.photos) {
+      imageUrls.push({
+        small: photo.url,
+        medium: photo.url,
+        big: photo.url
+      })
+    }
+
+    return imageUrls;
   }
 
 }
