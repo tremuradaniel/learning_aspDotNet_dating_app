@@ -9,6 +9,7 @@ import { HomeComponent } from './home/home.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './_guards/auth.guard';
+import { MemberEditComponent } from './members/member-edit/member-edit.component';
 
 const routes: Routes = [
   {
@@ -27,6 +28,10 @@ const routes: Routes = [
       {
         path: 'members/:username', 
         component: MemberDetailComponent
+      },
+      {
+        path: 'member/edit', 
+        component: MemberEditComponent
       },
       {
         path: 'lists', 
