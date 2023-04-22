@@ -49,7 +49,12 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(x => 
+            var user = await _context.Users
+                // the entity framework will not load related entities (Photos)
+                // by default - in order to use them, we must eager load them
+                // with Include
+                .Include(p => p.Photos)
+                .SingleOrDefaultAsync(x => 
                 x.UserName == loginDTO.Username
             );
             if (user == null) return Unauthorized("Invalid username");
@@ -66,7 +71,8 @@ namespace API.Controllers
 
             return new UserDTO{
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
             };
         }
 
