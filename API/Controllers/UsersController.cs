@@ -1,6 +1,7 @@
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -21,16 +22,25 @@ namespace API.Controllers
       IUserRepository userRepository,
       IMapper mapper,
       IPhotoService photoService
-    ) {
+    )
+    {
       _userRepository = userRepository;
       _mapper = mapper;
       _photoService = photoService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+    public async Task<ActionResult<PageList<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
     {
-      var users = await _userRepository.GetMembersAsync();
+      var users = await _userRepository.GetMembersAsync(userParams);
+
+      Response.AddPaginationHeader(
+        new PaginationHeader(
+          users.CurrentPage, 
+          users.PageSize, 
+          users.TotalCount, 
+          users.TotalPages)
+      );
 
       return Ok(users);
     }
@@ -66,7 +76,7 @@ namespace API.Controllers
 
       if (result.Error != null) return BadRequest(result.Error.Message);
 
-      var photo = new Photo 
+      var photo = new Photo
       {
         Url = result.SecureUrl.AbsoluteUri,
         PublicId = result.PublicId
@@ -76,10 +86,11 @@ namespace API.Controllers
 
       user.Photos.Add(photo);
 
-      if (await _userRepository.SaveAllAsync()) {
+      if (await _userRepository.SaveAllAsync())
+      {
         return CreatedAtAction(
           nameof(GetUser),
-          new {username = user.UserName}, 
+          new { username = user.UserName },
           _mapper.Map<PhotoDto>(photo)
         );
       };
@@ -120,7 +131,8 @@ namespace API.Controllers
 
       if (photo.IsMain) return BadRequest("You cannot delete your main photo");
 
-      if (photo.PublicId != null) {
+      if (photo.PublicId != null)
+      {
         var result = await _photoService.DeletePhotoAsync(photo.PublicId);
         if (result.Error != null) return BadRequest(result.Error.Message);
       }
