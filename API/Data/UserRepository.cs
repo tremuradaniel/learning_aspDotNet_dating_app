@@ -49,16 +49,6 @@ namespace API.Data
 
     public async Task<MemberDto> GetMemberAsync(string username)
     {
-        // done without autoMapping...
-        // return await _context.Users
-        //     .Where(x => x.UserName == username)
-        //     .Select(user => new MemberDto{
-        //         Id = user.Id,
-        //         UserName = user.UserName,
-        //         KnownAs = user.KnownAs,
-        //         [.........]
-        //     }).SingleOrDefaultAsync();
-
         return await _context.Users
             .Where(x => x.UserName == username)
             .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
