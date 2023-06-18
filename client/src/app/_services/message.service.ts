@@ -5,39 +5,63 @@ import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
 import { Message } from '../_models/Message';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { User } from '../_models/User';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, take } from 'rxjs';
+import { Group } from '../_models/Group';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService {
+  baseUrl = environment.apiUrl;
+  hubUrl = environment.hubUrl;
   private hubConnection?: HubConnection;
   private messageThreadSource = new BehaviorSubject<Message[]>([]);
   messageThread$ = this.messageThreadSource.asObservable();
 
-  sendMessage(username: string, content: string) {
-    return this.http.post<Message>(this.baseUrl + 'messages', 
-      {recipientUsername: username, content});
-  }
-  baseUrl = environment.apiUrl;
-  hubUrl = environment.hubUrl;
-
   constructor(private http: HttpClient) { }
 
-  createHubConnection(user: User, otherUsername: string)
-  {
+  createHubConnection(user: User, otherUsername: string) {
     this.hubConnection = new HubConnectionBuilder()
-    .withUrl(this.hubUrl + 'message?user=' + otherUsername, {
-      accessTokenFactory: () => user.token
-    }).withAutomaticReconnect()
-      .build()
-    ;
+      .withUrl(this.hubUrl + 'message?user=' + otherUsername, {
+        accessTokenFactory: () => user.token
+      })
+      .withAutomaticReconnect()
+      .build();
 
     this.hubConnection.start().catch(error => console.log(error));
 
-    this.hubConnection.on("ReceivedMessageThread", messages => {
+    this.hubConnection.on('ReceiveMessageThread', messages => {
       this.messageThreadSource.next(messages);
-    });
+    })
+
+    this.hubConnection.on('UpdatedGroup', (group: Group) => {
+      if (group.connections.some(x => x.username === otherUsername)) {
+        this.messageThread$.pipe(take(1)).subscribe({
+          next: messages => {
+            messages.forEach(message => {
+              if (!message.dateRead) {
+                message.dateRead = new Date(Date.now())
+              }
+            })
+            this.messageThreadSource.next([...messages]);
+          }
+        })
+      }
+    })
+
+    this.hubConnection.on('NewMessage', message => {
+      this.messageThread$.pipe(take(1)).subscribe({
+        next: messages => {
+          this.messageThreadSource.next([...messages, message])
+        }
+      })
+    })
+  }
+
+  async sendMessage(username: string, content: string) {
+    return this.hubConnection?.invoke('SendMessage', {
+      recipientUsername: username, content
+    }).catch(error => console.log(error));
   }
 
   stopHubConnection()
