@@ -1,14 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map } from 'rxjs';
-import { User } from '../_models/User';
 import { environment } from 'src/environments/environment';
 import { PresenceService } from './presence.service';
+import { User } from '../_models/User';
 
-// services are singletons - they're instantiated when our application starts 
-// and destroyed our app shuts down
-// vs ComponentFactoryResolver, which are destroyed along with any stat that is 
-// storead inside as we move from component to component
 @Injectable({
   providedIn: 'root'
 })
@@ -27,8 +23,18 @@ export class AccountService {
           this.setCurrentUser(user);
         }
       })
-    );
+    )
   }
+
+  register(model: any) {
+    return this.http.post<User>(this.baseUrl + 'account/register', model).pipe(
+      map(user => {
+        if (user) {
+          this.setCurrentUser(user);
+        }
+      })
+    )
+  } 
 
   setCurrentUser(user: User) {
     user.roles = [];
@@ -45,18 +51,7 @@ export class AccountService {
     this.presenceService.stopHubConnection();
   }
 
-  register(model: any) {
-    return this.http.post<User>(this.baseUrl + 'account/register', model).pipe(
-      map(user => {
-        if (user) {
-          this.setCurrentUser(user);
-        }
-      })
-    )
-  }
-
   getDecodedToken(token: string) {
     return JSON.parse(atob(token.split('.')[1]))
   }
-  
 }
