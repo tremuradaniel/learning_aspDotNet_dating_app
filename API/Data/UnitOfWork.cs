@@ -19,6 +19,7 @@ namespace API.Data
 
     public ILikesRepository LikesRepository => new LikesRepository(_context);
 
+    // Commits the changes
     public async Task<bool> Complete()
     {
       return await _context.SaveChangesAsync() > 0;
