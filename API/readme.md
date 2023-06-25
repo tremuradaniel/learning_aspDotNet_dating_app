@@ -8,3 +8,6 @@ the subsequent migrations do not need the location specification
 
 update database
 ```dotnet ef database update```
+
+
+Test password - Pa$$w0rd
